@@ -1,4 +1,4 @@
-namespace: elaview-dev
+namespace: microservices-dev
 resources:
   - ../../base
   - namespace.yaml

@@ -1,4 +1,4 @@
-namespace: elaview-staging
+namespace: microservices-prod
 resources:
   - ../../base
   - namespace.yaml

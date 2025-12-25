@@ -1,1 +1,11 @@
+# terraform
+*.terraform
+*.terraform.lock.hcl
+!*.terraform/modules
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# IDEs
 .idea
+.vscode

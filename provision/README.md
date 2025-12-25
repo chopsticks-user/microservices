@@ -16,3 +16,9 @@ minikube start
 kubectl get pods -n kube-system # should see provisioner or whatever pods related to the addons
 ```
 
+### Fix Minikube "Enabling 'default-storageclass' returned an error"
+
+```bash
+minikube delete --all --purge
+```
+
