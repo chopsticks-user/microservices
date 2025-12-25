@@ -1,12 +1,10 @@
 import express from "express";
-import {
-  forgotPasswordController,
-  loginController,
-  logoutController,
-  refreshController,
-  resetPasswordController,
-  signupController,
-} from "~/controllers/auth.controller.js";
+import loginController from "~/controllers/login.controller.js";
+import signupController from "~/controllers/signup.controller.js";
+import logoutController from "~/controllers/logout.controller.js";
+import resetPasswordController from "~/controllers/reset-password.controller.js";
+import forgotPasswordController from "~/controllers/forgot-password.controller.js";
+import refreshController from "~/controllers/refresh.controller.js";
 
 const authRouter = express
   .Router()

@@ -1,5 +1,5 @@
 [package]
-name = "api-gateway"
+name = "microservices-api-gateway"
 version = "0.1.0"
 edition = "2024"
 

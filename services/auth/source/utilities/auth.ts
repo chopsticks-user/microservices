@@ -40,13 +40,16 @@ const auth = betterAuth({
       },
       rotationInterval: 30 * 24 * 60 * 60,
       gracePeriod: 7 * 24 * 60 * 60,
-      definePayload: (user: any, session: any) => ({
+      definePayload: (
+        user: { id: string; email: string; role: string },
+        session: { id: string },
+      ) => ({
         userId: user.id,
         email: user.email,
         role: user.role,
         sessionId: session.id,
       }),
-    } as any),
+    }),
   ],
 });
 
