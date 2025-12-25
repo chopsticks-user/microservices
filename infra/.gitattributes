@@ -1,0 +1,5 @@
+*.yml linguist-detectable=true linguist-language=YAML
+*.yaml linguist-detectable=true linguist-language=YAML
+*.conf linguist-detectable=true linguist-language=Nginx
+*.lua linguist-detectable=true linguist-language=Lua
+*.sh linguist-detectable=true linguist-language=Shell

@@ -1,0 +1,50 @@
+{
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch source/server.ts",
+    "build": "tsc && tsc-alias",
+    "start": "node build/server.js",
+    "test": "vitest --run",
+    "test:unit": "vitest source --run",
+    "test:integration": "vitest tests/integration --run",
+    "test:e2e": "vitest tests/e2e --run",
+    "test:dev": "vitest",
+    "test:unit:dev": "vitest source",
+    "test:integration:dev": "vitest tests/integration",
+    "test:e2e:dev": "vitest tests/e2e",
+    "test:coverage": "vitest --coverage",
+    "test:ui": "vitest --coverage --ui",
+    "lint": "eslint source/**/*.ts",
+    "lint:fix": "eslint source/**/*.ts --fix",
+    "format": "prettier --write \"source/**/*.ts\"",
+    "format:check": "prettier --check \"source/**/*.ts\""
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.89.0",
+    "better-auth": "^1.4.7",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "jose": "^6.1.3",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.3",
+    "@types/pg": "^8.16.0",
+    "@types/supertest": "^6.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.50.0",
+    "@typescript-eslint/parser": "^8.50.0",
+    "@vitest/coverage-v8": "^4.0.16",
+    "@vitest/ui": "^4.0.16",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.7.4",
+    "supabase": "^2.67.3",
+    "supertest": "^7.1.4",
+    "tsc-alias": "^1.8.16",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vite-tsconfig-paths": "^6.0.3",
+    "vitest": "^4.0.16"
+  }
+}

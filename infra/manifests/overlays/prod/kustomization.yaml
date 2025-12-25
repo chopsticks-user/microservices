@@ -1,0 +1,4 @@
+namespace: elaview-prod
+resources:
+  - ../../base
+  - namespace.yaml

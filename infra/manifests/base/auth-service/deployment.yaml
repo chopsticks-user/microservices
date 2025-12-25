@@ -1,0 +1,22 @@
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: elaview-service-auth-deployment
+#  labels:
+#    app: elaview-service-auth
+#    type: elaview-service
+#spec:
+#  template:
+#    metadata:
+#      name: elaview-service-auth-pod
+#      labels:
+#        app: elaview-service-auth
+#        type: elaview-service
+#    spec:
+#      containers:
+#        - name: elaview-nginx-container
+#          image: nginx
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      type: elaview-service

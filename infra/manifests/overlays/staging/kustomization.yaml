@@ -1,0 +1,4 @@
+namespace: elaview-staging
+resources:
+  - ../../base
+  - namespace.yaml

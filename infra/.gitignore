@@ -1,0 +1,18 @@
+# terraform
+*.terraform
+*.terraform.lock.hcl
+!*.terraform/modules
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# k8s
+
+# nginx + openresty
+gateway/logs
+gateway/temp
+gateway/lua_modules
+
+# IDEs
+.idea
+.vscode
