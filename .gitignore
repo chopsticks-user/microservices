@@ -6,6 +6,8 @@
 *.tfstate.*
 *.tfstate.backup
 
+**/secrets.json
+
 # IDEs
 .idea
 .vscode
