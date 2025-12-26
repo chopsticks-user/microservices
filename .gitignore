@@ -8,6 +8,8 @@
 
 **/secrets.json
 
+.devbox
+
 # IDEs
 .idea
 .vscode
