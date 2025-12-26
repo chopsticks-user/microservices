@@ -103,10 +103,13 @@ After reading this file, present structured choices:
 External (Client → API Gateway)
   ↓ HTTP/3 + TLS 1.3 (Let's Encrypt via cert-manager)
 
-Internal (API Gateway → Services)
+API Gateway → Auth Service
+  ↓ HTTP (internal ClusterIP)
+
+API Gateway → Other Services
   ↓ gRPC + mTLS (mutual TLS via internal CA)
 
-Service → Service
+Service → Service (if needed)
   ↓ gRPC + mTLS (mutual TLS via internal CA)
 
 Service → Database
@@ -114,10 +117,29 @@ Service → Database
 ```
 
 ### Network Security Model
-- **External Layer**: Only API Gateway accepts public traffic
-- **Network Policies**: Backend services ONLY accept from API Gateway
-- **Inbound/Outbound Control**: Kubernetes NetworkPolicies enforce restrictions
-- **No direct service-to-service** HTTP - all via gRPC + mTLS
+- **External Layer**: Only API Gateway accepts public traffic (NodePort)
+- **Internal Layer**: All backend services use ClusterIP (not externally accessible)
+- **Network Policies**: Backend services ONLY accept from API Gateway (planned)
+- **Inbound/Outbound Control**: Kubernetes NetworkPolicies enforce restrictions (planned)
+- **Service Communication**: Auth uses HTTP, all other services use gRPC + mTLS
+
+### Auth Service Architecture Decision
+**Why HTTP instead of gRPC for auth-service?**
+
+Auth-service uses **Express.js + better-auth** over HTTP instead of gRPC because:
+
+1. **better-auth is HTTP-native**: Built for HTTP request/response flows, OAuth redirects, session cookies
+2. **OAuth flows require HTTP**: OAuth 2.0 providers (Google, GitHub) require HTTP redirect callbacks
+3. **Email verification**: Uses HTTP callback URLs for email confirmation links
+4. **Only API Gateway calls it**: No need for gRPC since only one consumer (API Gateway)
+5. **Other services don't need it**: Backend services validate JWTs locally using public keys (JWKS)
+
+**JWT Validation Pattern:**
+- Auth-service: Issues JWTs via HTTP endpoints
+- API Gateway: Calls auth-service (HTTP), adds JWT to gRPC metadata for backend services
+- Backend Services: Validate JWTs locally without calling auth-service
+
+This keeps better-auth's ecosystem benefits while maintaining secure internal communication.
 
 ### Authentication & Secrets
 - **Auth Method**: JWT tokens with RS256 signing
@@ -199,10 +221,11 @@ microservices/
 ## Known Issues & Blockers
 
 ### Critical Blockers
-1. **gRPC not implemented** - API Gateway can't communicate with backend
-2. **mTLS certificates not generated** - No internal service authentication
-3. **Auth endpoints are stubs** - No real authentication happening
-4. **No database migrations** - Schema changes not managed
+1. **gRPC not implemented** - API Gateway can't communicate with gRPC-based backend services (Users, Fiat, Crypto, etc.)
+2. **HTTP client needed in API Gateway** - Need to implement HTTP client for auth-service communication
+3. **mTLS certificates not generated** - No internal service authentication for gRPC services
+4. **Auth endpoints are stubs** - No real authentication happening
+5. **No database migrations** - Schema changes not managed
 
 ### Development Issues
 - Terraform can hang during ESO installation → Fix: `minikube stop && minikube start` with storage addons

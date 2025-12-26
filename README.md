@@ -69,20 +69,19 @@ This platform provides a complete payment processing solution supporting both tr
                             ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │                     API Gateway (Rust)                          │
-│            REST/HTTP → gRPC Translation Layer                   │
+│       REST/HTTP → HTTP/gRPC Translation Layer                   │
 │         • Request validation & rate limiting                    │
 │         • JWT verification                                      │
-│         • Protocol translation (REST → gRPC)                    │
-└───────────────────────────┬─────────────────────────────────────┘
-                            │
-                            │ gRPC + mTLS (internal)
-                ┌───────────┴───────────┐
-                │                       │
-                ↓                       ↓
+│         • Protocol translation (REST → HTTP/gRPC)               │
+└─────────────┬─────────────────┬─────────────────────────────────┘
+              │                 │
+              │ HTTP            │ gRPC + mTLS (internal)
+              ↓                 ↓
 ┌───────────────────────┐  ┌───────────────────────┐
 │   Auth Service (TS)   │  │  Users Service (TS)   │
 │  • JWT generation     │  │  • Profile management │
 │  • Session mgmt       │  │  • Account data       │
+│  • HTTP endpoints     │  │  • gRPC server        │
 └───────────────────────┘  └───────────────────────┘
                 │                       │
                 └───────────┬───────────┘
@@ -146,20 +145,25 @@ This platform provides a complete payment processing solution supporting both tr
 
 ### Communication Patterns
 
-| Layer                      | Protocol                 | Security                | Status            |
-|----------------------------|--------------------------|-------------------------|-------------------|
-| **Client → API Gateway**   | REST/HTTP3 over QUIC     | TLS 1.3 (Let's Encrypt) | 🔮 Planned        |
-| **API Gateway → Services** | gRPC                     | mTLS (mutual TLS)       | 🚧 In Development |
-| **Service → Service**      | gRPC                     | mTLS (mutual TLS)       | 🚧 In Development |
-| **Service → Database**     | PostgreSQL wire protocol | SSL/TLS                 | ✅ Implemented     |
+| Layer                        | Protocol                 | Security                      | Status            |
+|------------------------------|--------------------------|-------------------------------|-------------------|
+| **Client → API Gateway**     | REST/HTTP3 over QUIC     | TLS 1.3 (Let's Encrypt)       | 🔮 Planned        |
+| **API Gateway → Auth**       | HTTP                     | Internal ClusterIP (K8s only) | ✅ Implemented    |
+| **API Gateway → Services**   | gRPC                     | mTLS (mutual TLS)             | 🚧 In Development |
+| **Service → Service**        | gRPC                     | mTLS (mutual TLS)             | 🚧 In Development |
+| **Service → Database**       | PostgreSQL wire protocol | SSL/TLS                       | ✅ Implemented    |
+
+**Note**: Auth-service uses HTTP instead of gRPC because better-auth is HTTP-native and requires HTTP for OAuth flows, email verification, and session management. Other backend services validate JWTs locally and don't need to call auth-service.
 
 ### Security Model
 
 1. **External Layer**: HTTPS/HTTP3 with TLS certificates from Let's Encrypt (cert-manager)
-2. **Internal Layer**: gRPC with mutual TLS (mTLS) using internal Certificate Authority
-3. **Secrets Management**: HashiCorp Vault with External Secrets Operator (ESO)
-4. **Authentication**: JWT tokens with RS256 signing, 15-minute expiry, 30-day key rotation
-5. **Network Policies**: Kubernetes NetworkPolicies ensure services only accept requests from API Gateway
+2. **Internal Layer - Auth Service**: HTTP over Kubernetes ClusterIP (not externally accessible)
+3. **Internal Layer - Other Services**: gRPC with mutual TLS (mTLS) using internal Certificate Authority
+4. **Secrets Management**: HashiCorp Vault with External Secrets Operator (ESO)
+5. **Authentication**: JWT tokens with RS256 signing, 15-minute expiry, 30-day key rotation
+6. **Network Isolation**: Only API Gateway exposed via NodePort; all backend services use ClusterIP
+7. **Network Policies**: Kubernetes NetworkPolicies restrict backend services to only accept from API Gateway (planned)
 
 ---
 
@@ -206,14 +210,14 @@ This platform provides a complete payment processing solution supporting both tr
 **Version**: 0.1.0
 **Location**: `/services/api-gateway/`
 
-The entry point for all client requests. Translates RESTful HTTP calls into gRPC calls to backend microservices.
+The entry point for all client requests. Translates RESTful HTTP calls into HTTP (for auth-service) or gRPC (for other backend services).
 
 **Key Features**:
 - HTTP/2 support (HTTP/3 planned)
 - JWT verification middleware
 - Request validation and sanitization
 - Rate limiting (planned)
-- Protocol translation (REST → gRPC)
+- Protocol translation: REST → HTTP (auth) / gRPC (other services)
 
 **Tech Stack**: Axum 0.8.8, Tokio (async runtime), Serde (JSON), jsonwebtoken, bcrypt
 

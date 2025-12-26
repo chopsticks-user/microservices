@@ -17,8 +17,6 @@ spec:
       containers:
         - name: auth-service
           image: frostdev273/microservices-auth-service:0.1.0
-          ports:
-            - containerPort: 50051
           envFrom:
             - configMapRef:
                 name: auth-service

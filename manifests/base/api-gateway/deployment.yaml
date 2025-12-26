@@ -17,8 +17,6 @@ spec:
       containers:
         - name: api-gateway
           image: frostdev273/microservices-api-gateway:0.1.0
-          ports:
-            - containerPort: 443
           envFrom:
             - configMapRef:
                 name: api-gateway

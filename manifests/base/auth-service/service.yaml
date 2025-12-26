@@ -7,5 +7,4 @@ spec:
   selector:
     app: auth-service
   ports:
-    - port: 443
-      targetPort: 50051
+    - port: 3001
